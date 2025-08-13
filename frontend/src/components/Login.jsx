@@ -1,8 +1,9 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-hot-toast';
-import axios from 'axios';
-import { useDispatch } from 'react-redux';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import { setAuthUser } from "../redux/userSlice";
 
 export default function Login() {
   const dispatch = useDispatch();
@@ -17,39 +18,38 @@ export default function Login() {
     e.preventDefault();
     try {
       const res = await axios.post(
-        'http://localhost:3000/api/v1/user/login',
+        "http://localhost:8000/api/v1/user/login",
         user,
         {
           headers: {
-            'Content-Type': 'application/json'
+            "Content-Type": "application/json",
           },
-          withCredentials: true
+          withCredentials: true,
         }
       );
 
       toast.success("Login successful!"); //Displays a success message when login is successful.
-      navigate('/');                        //Navigates to the homepage (/).
+      navigate("/"); //Navigates to homepage (/).
       dispatch(setAuthUser(res.data));
       console.log(res);
-
     } catch (err) {
       console.log("Login Error:", err);
-    
+
       setUser({ username: "", password: "" });
     }
   };
 
   return (
-    <div className="">
-      <div className="w-full p-6 shadow-md rounded-md bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-10 border border-gray-100 ">
+    <div className="w-full max-w-md mx-auto min-h-96">
+      <div className="w-full p-8 shadow-md rounded-md bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-10 border border-gray-100 ">
         <h1 className="text-4xl font-bold text-center">Login</h1>
-        <p className="text-white text-xs text-center">
+        <p className="text-white text-xs text-center mb-8 p-1">
           Enter your credentials to log in
         </p>
 
         <form onSubmit={onSubmitHandler}>
-          <div className="flex flex-col gap-4 mt-3">
-            <label className="text-sm font-semibold text-white">Username</label>
+          <div className="flex flex-col gap-2 mt-3">
+            <label>Username</label>
             <input
               type="text"
               value={user.username}
@@ -58,7 +58,7 @@ export default function Login() {
               className="bg-white rounded-md shadow-md text-black w-full input input-bordered"
             />
 
-            <label className="text-sm font-semibold text-white">Password</label>
+            <label>Password</label>
             <input
               type="password"
               placeholder="********"
@@ -74,7 +74,10 @@ export default function Login() {
         </form>
 
         <p className="text-xs text-center mt-3">
-          Don't have an account? <a href="/Signup" className="text-blue-400 underline">Signup</a>
+          Don't have an account?{" "}
+          <a href="/signup" className="text-blue-400 underline">
+            Signup
+          </a>
         </p>
       </div>
     </div>

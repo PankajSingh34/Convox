@@ -5,22 +5,18 @@ import jwt from "jsonwebtoken";
 export const register = async (req, res) => {
   try {
     const { fullName, username, password, confirmPassword, gender } = req.body;
-   
 
     if (!fullName || !username || !password || !confirmPassword || !gender) {
-      
       return res.status(400).json({ message: "Please fill all the fields" });
     }
 
     if (password !== confirmPassword) {
-   
       return res.status(400).json({ message: "Passwords do not match" });
     }
 
     const existingUser = await User.findOne({ username });
 
     if (existingUser) {
-      
       return res.status(400).json({ message: "User already exists" });
     }
 
@@ -50,22 +46,18 @@ export const login = async (req, res) => {
     // Check if both fields are filled
     if (!username || !password) {
       return res.status(400).json({ message: "Please fill all the fields" });
-      console.log("Please fill all the fields");
-     
     }
     // Find the user by username
     const user = await User.findOne({ username });
 
     if (!user) {
       return res.status(400).json({ message: "Invalid username or password" });
-      console.log("Invalid username or password");
     }
     // Compare the password
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
     if (!isPasswordCorrect) {
       return res.status(400).json({ message: "Invalid username or password" });
-      console.log("Invalid username or password");
     }
     const tokenData = {
       userId: user._id,
@@ -85,10 +77,10 @@ export const login = async (req, res) => {
         _id: user._id,
         username: user.username,
         fullName: user.fullName,
-        profilephoto: user.profilePhoto,
+        profilePhoto: user.profilePhoto,
       });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -100,7 +92,7 @@ export const logout = (req, res) => {
       .cookie("token", "", { maxAge: 0 })
       .json({ message: "logged out successfully" });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).json({ message: "internal server error" });
   }
 };
@@ -108,12 +100,16 @@ export const logout = (req, res) => {
 export const getOtherUsers = async (req, res) => {
   try {
     const loggedInUserId = req.id;
-    const otherUsers = await User.find({ _id: { $ne: loggedInUserId } }).select(
-      "-password"
-    );
+    
+    // Add indexing hint and limit for better performance
+    const otherUsers = await User.find({ _id: { $ne: loggedInUserId } })
+      .select("-password -__v") // Exclude unnecessary fields
+      .lean() // Convert to plain JavaScript objects for faster processing
+      .limit(100); // Limit results for better performance
+    
     return res.status(200).json(otherUsers);
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).json({ message: "internal server error" });
   }
 };
