@@ -59,6 +59,10 @@ app.get("/api/v1/health-check", (req, res) => {
   return res.status(200).json({ message: "Server is running" });
 });
 
+app.get("/check", (req, res) => {
+  return res.status(200).send("server is running");
+});
+
 // Start server with socket.io
 server.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
