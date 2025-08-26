@@ -1,1 +1,1 @@
-export const BASE_URL = "http://localhost:8000"; // Backend port
+export const BASE_URL = "https://convox-n1ns.onrender.com"; // Backend port
